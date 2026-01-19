@@ -1,4 +1,15 @@
 package example;
+//비즈니스 로직 클래스는 ‘계산 + 판단 + 규칙 담당’
+//
+//HashMap은 ‘여러 상품을 정리해서 보관하는 상자’
+//
+//main은 그냥:
+//
+//사용자 입력 받고
+//
+//비즈니스 로직에 시키고
+//
+//결과 출력하는 심부름꾼
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +17,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+//        Scanner sc = new Scanner(System.in); CommerceSystem으로 넘겨서 굳이 필요없음
 
-        Scanner sc = new Scanner(System.in);
         List<Product> products = new ArrayList<>();
-
         Product pr1 = new Product("Galaxy S25", 1200000, "최신 안드로이드 스마트폰", 50);
         Product pr2 = new Product("iPhone 16", 1350000, "Apple의 최신 스마트폰", 20);
         Product pr3 = new Product("MacBook Pro", 2400000, "M3 칩셋이 탑재된 노트북", 100);
@@ -20,27 +30,8 @@ public class Main {
         products.add(pr3);
         products.add(pr4);
 
-        while (true) {
-            System.out.println("[ 실시간 커머스 플랫폼 - 전자제품 ]");
-            System.out.println("---------------------------------------------------------------");
-            System.out.printf("%-13s | %9s | %-35s%n", "     상품명", "가격   ", "             설명");
-            System.out.println("---------------------------------------------------------------");
-
-            for (Product product : products) {
-                product.printInfo();
-            }
-
-            System.out.println("---------------------------------------------------------------");
-            System.out.println("0. 종료          | 프로그램 종료");
-
-            int choice = sc.nextInt();
-
-            if (choice == 0) {
-                System.out.println("커머스 플랫폼을 종료합니다.");
-                break;
-            }
-        }
-        sc.close();
+        CommerceSystem cs = new CommerceSystem(products);
+        cs.start();
     }
 }
 //        Product pr1 = new Product();
