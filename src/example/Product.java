@@ -15,11 +15,9 @@ public class Product {
         this.stock = stock;
     }
 
-    void printInfo() {
-        System.out.printf(
-                "%-15s | %10d | %-35s%n",
-                name, price, explanation
-        );
+
+    public void printInfo(int number) {
+        System.out.printf("%d. %-12s | %d원 | %s%n", number, name, price, explanation);
     }
 }
 

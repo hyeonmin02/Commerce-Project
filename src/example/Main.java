@@ -1,15 +1,4 @@
 package example;
-//비즈니스 로직 클래스는 ‘계산 + 판단 + 규칙 담당’
-//
-//HashMap은 ‘여러 상품을 정리해서 보관하는 상자’
-//
-//main은 그냥:
-//
-//사용자 입력 받고
-//
-//비즈니스 로직에 시키고
-//
-//결과 출력하는 심부름꾼
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,23 +6,39 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//        Scanner sc = new Scanner(System.in); CommerceSystem으로 넘겨서 굳이 필요없음
+        CommerceSystem cs = new CommerceSystem();
 
-        List<Product> products = new ArrayList<>();
-        Product pr1 = new Product("Galaxy S25", 1200000, "최신 안드로이드 스마트폰", 50);
-        Product pr2 = new Product("iPhone 16", 1350000, "Apple의 최신 스마트폰", 20);
-        Product pr3 = new Product("MacBook Pro", 2400000, "M3 칩셋이 탑재된 노트북", 100);
-        Product pr4 = new Product("AirPods Pro", 350000, "노이즈 캔슬링 무선 이어폰", 100);
+        Category clothes = new Category("의류");
+        Category food = new Category("식품");
+        Category electronics = new Category("전자제품");
 
-        products.add(pr1);
-        products.add(pr2);
-        products.add(pr3);
-        products.add(pr4);
+        electronics.addProduct(new Product("Galaxy S25", 1200000, "최신 안드로이드 스마트폰", 50));
+        electronics.addProduct(new Product("iPhone 16", 1350000, "Apple의 최신 스마트폰", 20));
+        electronics.addProduct(new Product("MacBook Pro", 2400000, "M3 칩셋이 탑재된 노트북", 100));
+        electronics.addProduct(new Product("AirPods Pro", 350000 ,"노이즈 캔슬링 무선 이어폰", 10));
 
-        CommerceSystem cs = new CommerceSystem(products);
+        cs.addCategory(electronics);
+        cs.addCategory(clothes);
+        cs.addCategory(food);
+
         cs.start();
     }
 }
+
+//        List<Product> products = new ArrayList<>();
+//        Product pr1 = new Product("Galaxy S25", 1200000, "최신 안드로이드 스마트폰", 50);
+//        Product pr2 = new Product("iPhone 16", 1350000, "Apple의 최신 스마트폰", 20);
+//        Product pr3 = new Product("MacBook Pro", 2400000, "M3 칩셋이 탑재된 노트북", 100);
+//        Product pr4 = new Product("AirPods Pro", 350000, "노이즈 캔슬링 무선 이어폰", 100);
+
+//        products.add(pr1);
+//        products.add(pr2);
+//        products.add(pr3);
+//        products.add(pr4);
+
+//        CommerceSystem cs = new CommerceSystem(products);
+//        cs.start();
+//    }
 //        Product pr1 = new Product();
 //        pr1.name = "Galaxy S24";
 //        pr1.price = 1200000;
