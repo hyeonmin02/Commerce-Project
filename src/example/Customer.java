@@ -1,23 +1,31 @@
 package example;
+
 //- [ ]  설명 : 고객 정보를 관리하는 클래스입니다.
-//- [ ]  클래스는 `고객명`, `이메일`, `등급`, `누적 주문 금액` 필드를 갖습니다.
-//- [ ]  `등급` 은 누적 주문 금액에 따라 정해집니다. ( 이번 주문 금액 포함)
-//    - `누적 주문금액 < 50만= 브론즈
-//    - `50만 < 누적 주문금액 < 100만 = 실버
-//    - `100만 < 누적 주문금액 < 200만 = 골드
-//    - `200만 < 누적 주문금액= 플레티넘
-//public class Customer {
-//    String customerName;
-//    String email;
-//    String grade;
-//    int amount;
-//
-//    public Customer(String customerName,String email, String grade, int amount) {
-//        this.customerName = customerName;
-//        this.email = email;
-//        this.grade = grade;
-//        this.amount = amount;
-//    }
-//    if (i = 50
-//
-// }
+// 필수과제에서는 출력값 X
+public class Customer {
+    String customerName;
+    String email;
+    String grade;
+    int amount;
+
+    // 생성자 (이번 주문 금액 포함된 누적 금액을 전달받음
+    public Customer(String customerName, String email, int amount) {
+        this.customerName = customerName;
+        this.email = email;
+        this.amount = amount;
+        customerGrade(); // 등급 자동계산
+    }
+
+    // 총 구매금액에 따른 등급 관리
+    void customerGrade() {
+        if (amount < 5000000) {
+            grade = "브론즈";
+        } else if (amount < 1000000) {
+            grade = "실버";
+        } else if (amount < 2000000) {
+            grade = "골드";
+        } else {
+            grade = "플래티넘";
+        }
+    }
+}
