@@ -3,6 +3,7 @@ package example;
 import javax.swing.plaf.IconUIResource;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 // + 메인에 존재하지않는 카테고리 선택 시 예외처리 (음수값,정수가 아닌 문자값 입력시 예외처리)
@@ -42,7 +43,7 @@ public class CommerceSystem {
     //    public void addCategory(Category category) {
 //        categories.add(category);
 //    }
-    // !CommerceSystem 생성자에 객체 생성을 했는데 addCategory는 쓸모가 없어진게 아닌가 튜터님께 여쭤보기!
+    // TODO !CommerceSystem 생성자에 객체 생성을 했는데 addCategory는 쓸모가 없어진게 아닌가 튜터님께 여쭤보기!
     public void start() {
 
         while (true) {
@@ -54,7 +55,7 @@ public class CommerceSystem {
             } //                    (i+1)번 뒤에, i번째 카테고리의 이름을 붙여서 화면에 찍어라
             System.out.println("0. 종료      | 프로그램 종료");
 
-            // 장바구니가 비어있지 않을 때만 주문 관리 보여주고 싶으면 이렇게
+            // 장바구니가 비어있지 않을 때만 주문관리를 보여줌 첫 번쨰 출력화면에 안뜸
             if (!cart.isEmpty()) {
                 System.out.println("\n[ 주문 관리 ]");
                 System.out.println("4. 장바구니 확인    | 장바구니를 확인 후 주문합니다.");
@@ -84,7 +85,7 @@ public class CommerceSystem {
                         break;
                     }
                     if (choice1 < 1 || choice1 > cat.getProducts().size()) {
-                        System.out.println("존재하지 않는 상품입니다.");
+                        System.out.println("존재하지 않는 상품입니다. 다시 입력해주세요.");
                         continue;
                     }
 
@@ -96,6 +97,7 @@ public class CommerceSystem {
                             + select.getStock() + "개");
 
                     System.out.println();
+
                     System.out.println("\"" + select.getName() + " | "
                             + df.format(select.getPrice()) + " | "
                             + select.getExplanation() + "\"");
@@ -113,24 +115,85 @@ public class CommerceSystem {
                             continue;
                         }
                         System.out.print("담을 수량을 입력해주세요. \n수량: ");
-                        int quantity = sc.nextInt();
 
-                        if (quantity <= 0) {
-                            System.out.println("수량은 1 이상이어야합니다.");
+                        int quantity;
+
+                        try {
+                            // 1) 숫자 입력 받기 (문자 입력 시 InputMismatchException 발생)
+                            try {
+                                quantity = sc.nextInt();
+                            } catch (InputMismatchException e) {
+                                sc.nextLine(); // 잘못 입력(문자 등) 버리기
+                                throw new MyException("숫자만 입력해주세요!");
+                            }
+
+                            // 2) 수량이 1 이상인지 검증 (이건 Cart에서 검사해도 되지만 UI에서 한 번 더 친절하게)
+                            //    여기서도 예외로 통일하고 싶으면 throw로 처리 가능
+                            if (quantity <= 0) {
+                                throw new MyException("수량은 1 이상이어야합니다.");
+                            }
+
+                            // 3) 재고 부족은 '정상 상황' → 예외 말고 if + 안내로 처리
+                            if (!select.hasStock(quantity)) {
+                                System.out.println("재고가 부족합니다.");
+                                continue; // 다시 입력받는 화면(현재 while)로
+                            }
+
+                            // 4) 장바구니 담기 (Cart 내부에서도 예외 던질 수 있음)
+                            cart.addProduct(select, quantity);
+
+                            System.out.println(select.getName() + " 가 " + quantity + "개가 장바구니에 추가되었습니다.");
+                            break; // 성공했으면 현재 루프 종료
+
+                        } catch (MyException e) {
+                            // MyException으로 통일해서 여기서 메시지 출력하고 다시 입력받기
+                            System.out.println(e.getMessage());
                             continue;
                         }
-                        if (select.hasStock(quantity)) {
-                            cart.addProduct(select, quantity); //cart에 담기 (재고 차감 x)
-                            System.out.println(select.getName() + "가 " + quantity + "개 장바구니에 추가되었습니다");
-                            break;
-                        } else {
-                            System.out.println("재고가 부족합니다.");
+
+
+//                        int quantity;
+//
+//                        try {
+//                            quantity = sc.nextInt();
+//                        } catch (InputMismatchException e) {
+//                            sc.nextLine(); // 잘못 입력 버리기
+//                            throw new MyException(System.out.println("숫자만 입력해주세요!");
+//                            continue; // 다시 입력 받기
+//                        }
+//
+//                        if (!select.hasStock(quantity)) {
+//                            System.out.println("재고가 부족합니다.");
 //                            continue;
-                        }
+//                        }
+//                        try {
+//                            cart.addProduct(select, quantity);
+//
+//                            System.out.println(select.getName() + " 가 " + quantity + "개가 장바구니에 추가되었습니다.");
+//                            break;
+//                        } catch (MyException e) {
+//                            System.out.println(e.getMessage());
+//                            continue;
+//                        }
+
+//                        if (quantity <= 0) {
+//                            System.out.println("수량은 1 이상이어야합니다.");
+//                            continue;
+//                        }
+//                        if (select.hasStock(quantity)) { // boolean 재고 체크 true 장바구니에 담음
+//                            cart.addProduct(select, quantity); //cart에 담기 (재고 차감 x)
+//                            System.out.println(select.getName() + "가 " + quantity + "개가 장바구니에 추가되었습니다.");
+//                            break;
+//    TODO 장바구니에 추가가 되고 장바구니 확인으로 바로 가는 게 맞는건가 아님 메인으로 가서 장바구니로 들어가 주문완료를 처리하는 게 맞는지 여쭤보기
+//    TODO 현재 장바구니 추가 출력문 이후 카테고리로 다시 돌아감 0 뒤로가기 입력 후 메인에서 장바구니로 들어가 주문완료 처리해야되는 상황
+//                        } else { //false 재고부족 예외처리
+//                            System.out.println("재고가 부족합니다.");
+//                           continue;
+//                        }
                     }
                 }
-                continue;
-            }
+                continue; // 메인으로 돌아가기
+            } //장바구니 메서드
             if (choice == 4 || choice == 5) {
                 if (cart.isEmpty()) {
                     System.out.println("장바구니가 비어있습니다. 먼저 상품을 담아주세요");
@@ -141,6 +204,7 @@ public class CommerceSystem {
             if (choice == 4) {
                 System.out.println("아래와 같이 주문하시겠습니까?");
             } // 주문취소
+
             if (choice == 5) {
                 cart.clear();
                 System.out.println("진행중인 주문을 취소했습니다.");
@@ -148,8 +212,8 @@ public class CommerceSystem {
             }
             System.out.println("\n[ 장바구니 내역 ]");
             for (CartItem item : cart.getItems()) {
-                Product p = item.getProduct();
-                System.out.println(p.getName() + " | "
+                Product p = item.getProduct(); // 장바구니 항목이 가지고 있는 상품을 꺼내 'p'라는 지역변수에 담음(별명)
+                System.out.println (p.getName() + " | "
                         + df.format(p.getPrice()) + "원 | "
                         + p.getExplanation() + " | "
                         + item.getQuantity() + "개");
@@ -166,9 +230,10 @@ public class CommerceSystem {
             if (decision != 1) { // 1이 아니면
                 System.out.println("1 또는 2만 입력해주세요! ");
                 continue;
-            }
+            } // 1도 아니고 2도 아니니 자동적으로 1은 주문확정으로 정해짐
 
             System.out.println("\n주문이 완료되었습니다! " + "총 금액: " + df.format(cart.getTotalPrice()) + "원");
+
 
             for (CartItem item : cart.getItems()) {
                 Product p = item.getProduct();
