@@ -11,7 +11,7 @@ public class Cart {
     // 장바구니에 담긴 "한 줄"들 (상품 + 수량)을 저장하는 리스트
     private List<CartItem> items = new ArrayList<>();
 
-    // 1. 상품 추가 (이미 담긴 상품이면 수량만 증가)
+    // 상품 추가 (이미 담긴 상품이면 수량만 증가)
     public void addProduct(Product product, int quantity) {
         // 수량이 1보다 작으면 말이 안 되니까 그냥 무시(또는 예외)
         if (quantity < 0) {
@@ -30,7 +30,7 @@ public class Cart {
         items.add(new CartItem(product, quantity));
     }
 
-    // 2. 상품 삭제( 해당 상품 줄 자체를 제거)
+    // 상품 삭제( 해당 상품 줄 자체를 제거)
     public boolean removeProduct(Product product) {
         return items.removeIf(item -> item.getProduct().equals(product));
         //  리스트 안을 전부 돌면서 조건이 true인 것들만 골라서 삭제 -> 람다식
@@ -39,19 +39,21 @@ public class Cart {
 //        items.remove(item); 를 요약한 것
     }
 
-    // 3. 수량 변경 (quantity로 "바로 설정")
+    // 수량 변경 (quantity로 "바로 설정")
     public void changeQuantity(Product product, int newQuantity) { // 기존 값에 덮어씌운다는 걸 보여주기 위해 newQuantity 매개변수사용
         if (newQuantity < 0) {
             throw new MyException("수량은 0 이상이어야 합니다.");
         }
 
-        for (CartItem item : items) {
-            if (item.getProduct().equals(product)) {
+        for (CartItem item : items) { // items 장바구니 전체목록, item 그안의 상품 하나 (: ~안에 있는)
+            // 장바구니 전체목록에 들어있는 상품 하나를 하니씩 꺼내본다
+            if (item.getProduct().equals(product)) { //이 장바구니 항목(item)이 가지고 있는 Product 객체가, 지금 내가 비교하려는 Product 객체와 같은 객체인가?
+
                 // 0개로 바꾸면 사실상 삭제가 자연스러움
                 if (newQuantity == 0) {
                     items.remove(item);
                 } else {
-                    item.setQuantity(newQuantity);
+                    item.setQuantity(newQuantity); // 지금 보고있는 장바구니 상품 수량을 새로 입력한 수량(newQuantity)으로 바꿔라
                 }
                 return;
             }
@@ -60,8 +62,8 @@ public class Cart {
         throw new MyException("장바구니에 없는 상품입니다.");
     }
 
-    // 4. 총 금액 계산
-    public int getTotalPrice() { // get메서드인지 그냥 객체라 amount로 바꿔도되는지 gpt에게
+    // 총 금액 계산
+    public int getTotalPrice() {
         int total = 0;
         for (CartItem item : items) {
             // 한 줄 가격 = 상품가격 * 수량
@@ -70,43 +72,23 @@ public class Cart {
         return total;
     }
 
-    // 6. 장바구니 비우기
+    // 장바구니 초기화
     public void clear() {
         items.clear();
     }
 
-    // 7. 비었는지 확인
+    // 비었는지 확인
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
-    // 8. 주문/결제 로직에서 장바구니 내용을 돌려볼 때 필요
+    // 주문/결제 로직에서 장바구니 내용을 돌려볼 때 필요
     public List<CartItem> getItems() {
         return items;
     }
-
-// 5. 장바구니 출력(콘솔 과제 편의용)
-public void printCart() {
-    if (items.isEmpty()) {
-        System.out.println("장바구니가 비어있습니다.");
-        return;
-    }
-    System.out.println("\n[ 장바구니 목록 ]");
-    for (int i = 0; i < items.size(); i++) {
-        CartItem item = items.get(i);
-
-        System.out.println(
-                (i + 1) + ". " +
-                        item.getProduct().getName() + " | " +
-                        item.getProduct().getPrice() + "원 | " +
-                        "수량: " + item.getQuantity() + " | " +
-                        "합계: " + item.getTotal() + "원"
-        );
-    }
-
-    System.out.println("총 금액: " + getTotalPrice() + "원");
 }
-}
+
+
 
 
 

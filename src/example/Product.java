@@ -10,6 +10,13 @@ public class Product {
     private String explanation;
     private int stock;
 
+    public Product(String name, int price, String explanation, int stock) {
+        this.name = name;
+        this.price = price;
+        this.explanation = explanation;
+        this.stock = stock;
+    }
+
     // setter
     public void setName(String name) {
         this.name = name;
@@ -40,23 +47,20 @@ public class Product {
         return explanation;
     }
 
-    public int getStock() {
+    public int getStock() { // 재고 숫자 그대로 꺼내줌
         return stock;
     }
-
-    public Product(String name, int price, String explanation, int stock) {
-        this.name = name;
-        this.price = price;
-        this.explanation = explanation;
-        this.stock = stock;
+    public boolean hasStock(int amount) { // 사용자가 이만큼 장바구니에 담아도 되나 물어봄 재고충분 true / 재고부족 false
+        return stock >= amount;
+    }
+    public void decreaseStock(int amount) { // 사용자가 결제해서 가져간 만큼 재고차감
+        this.stock -= amount;
     }
 
     public void printInfo(int number) {
         DecimalFormat df = new DecimalFormat("#,###"); // 자바에서 큰 숫자 콤마 찍는 클래스
         String priceStr = df.format(price);
-
         System.out.printf("%d. %-16s | %10s원 | %s%n", // %d 숫자 (int) %s 문자열 (String) %s%n (문자열 출력 후 줄바꿈)
                 number, name, priceStr, explanation);
     }
-
 }

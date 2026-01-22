@@ -1,5 +1,7 @@
 package example;
 
+import javax.swing.plaf.IconUIResource;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,8 +10,10 @@ import java.util.Scanner;
 
 // 설명: 커머스 플랫폼의 상품을 관리하고 사용자 입력을 처리하는 클래스입니다.
 public class CommerceSystem {
+    private DecimalFormat df = new DecimalFormat("#,###");
     private final List<Category> categories = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
+    private final Cart cart = new Cart();
 
     public CommerceSystem() {
         Category clothes = new Category("의류");
@@ -20,7 +24,7 @@ public class CommerceSystem {
         electronics.addProduct(new Product("iPhone 16", 1350000, "Apple의 최신 스마트폰", 20));
         electronics.addProduct(new Product("MacBook Pro", 2400000, "M3 칩셋이 탑재된 노트북", 100));
         electronics.addProduct(new Product("AirPods Pro", 350000, "노이즈 캔슬링 무선 이어폰", 10));
-        electronics.addProduct(new Product("Galaxy Z Trifold",3590400,"두 번 접히는 혁신적인 폼팩터",5));
+        electronics.addProduct(new Product("Galaxy Z Trifold", 3590400, "두 번 접히는 혁신적인 폼팩터", 5));
 
         clothes.addProduct(new Product("맨시티 유니폼", 160000, "푸마 맨시티 어센틱 반팔 유니폼", 10));
         clothes.addProduct(new Product("나이키 에어포스", 149000, "나이키 오프화이트 에어포스", 15));
@@ -35,21 +39,27 @@ public class CommerceSystem {
         categories.add(food);
     }
 
-//    public void addCategory(Category category) {
+    //    public void addCategory(Category category) {
 //        categories.add(category);
 //    }
     // !CommerceSystem 생성자에 객체 생성을 했는데 addCategory는 쓸모가 없어진게 아닌가 튜터님께 여쭤보기!
-
     public void start() {
 
         while (true) {
-            System.out.println("\n[ 실시간 커머스 플랫폼 메인 ] ");
+            System.out.println("\n아래 메뉴를 선택해주세요.");
+            System.out.println("[ 실시간 커머스 플랫폼 메인 ] ");
 
             for (int i = 0; i < categories.size(); i++) {
                 System.out.println((i + 1) + ". " + categories.get(i).getCategoryName()); // 리스트.get(번호)
             } //                    (i+1)번 뒤에, i번째 카테고리의 이름을 붙여서 화면에 찍어라
+            System.out.println("0. 종료      | 프로그램 종료");
 
-            System.out.println("0. 종료       | 프로그램 종료");
+            // 장바구니가 비어있지 않을 때만 주문 관리 보여주고 싶으면 이렇게
+            if (!cart.isEmpty()) {
+                System.out.println("\n[ 주문 관리 ]");
+                System.out.println("4. 장바구니 확인    | 장바구니를 확인 후 주문합니다.");
+                System.out.println("5. 주문 취소       | 진행중인 주문을 취소합니다.");
+            }
 
             int choice = sc.nextInt();
 
@@ -58,47 +68,121 @@ public class CommerceSystem {
                 break;
             }
 
-            if (choice < 1 || choice > categories.size()) {
-                System.out.println("존재하지 않는 카테고리입니다.");
+            if (choice >= 1 && choice <= categories.size()) {
+                Category cat = categories.get(choice - 1); // list.get(사용자입력 - 1)
+
+                while (true) {
+                    System.out.println("\n[ " + cat.getCategoryName() + " 카테고리 ]");
+                    for (int i = 0; i < cat.getProducts().size(); i++) {
+                        cat.getProducts().get(i).printInfo(i + 1); // 카테고리 번호 매기기
+                    }
+                    System.out.println("0. 뒤로가기");
+
+                    int choice1 = sc.nextInt();
+//                Product select = null;
+                    if (choice1 == 0) {
+                        break;
+                    }
+                    if (choice1 < 1 || choice1 > cat.getProducts().size()) {
+                        System.out.println("존재하지 않는 상품입니다.");
+                        continue;
+                    }
+
+                    Product select = cat.getProducts().get(choice1 - 1);
+
+                    System.out.println("선택한 상품: " + select.getName() + " | "
+                            + df.format(select.getPrice()) + "원 | "
+                            + select.getExplanation() + " | 재고: "
+                            + select.getStock() + "개");
+
+                    System.out.println();
+                    System.out.println("\"" + select.getName() + " | "
+                            + df.format(select.getPrice()) + " | "
+                            + select.getExplanation() + "\"");
+
+                    while (true) {
+                        System.out.println("위 상품을 장바구니에 추가하시겠습니까?");
+                        System.out.println("1. 확인    2. 취소");
+
+                        int choice2 = sc.nextInt();
+                        if (choice2 == 2) {
+                            break;
+                        }
+                        if (choice2 != 1) {
+                            System.out.println("1 또는 2만 입력해주세요.");
+                            continue;
+                        }
+                        System.out.print("담을 수량을 입력해주세요. \n수량: ");
+                        int quantity = sc.nextInt();
+
+                        if (quantity <= 0) {
+                            System.out.println("수량은 1 이상이어야합니다.");
+                            continue;
+                        }
+                        if (select.hasStock(quantity)) {
+                            cart.addProduct(select, quantity); //cart에 담기 (재고 차감 x)
+                            System.out.println(select.getName() + "가 " + quantity + "개 장바구니에 추가되었습니다");
+                            break;
+                        } else {
+                            System.out.println("재고가 부족합니다.");
+//                            continue;
+                        }
+                    }
+                }
+                continue;
+            }
+            if (choice == 4 || choice == 5) {
+                if (cart.isEmpty()) {
+                    System.out.println("장바구니가 비어있습니다. 먼저 상품을 담아주세요");
+                    continue;
+                }
+            }
+
+            if (choice == 4) {
+                System.out.println("아래와 같이 주문하시겠습니까?");
+            } // 주문취소
+            if (choice == 5) {
+                cart.clear();
+                System.out.println("진행중인 주문을 취소했습니다.");
+                continue;
+            }
+            System.out.println("\n[ 장바구니 내역 ]");
+            for (CartItem item : cart.getItems()) {
+                Product p = item.getProduct();
+                System.out.println(p.getName() + " | "
+                        + df.format(p.getPrice()) + "원 | "
+                        + p.getExplanation() + " | "
+                        + item.getQuantity() + "개");
+            }
+
+            System.out.println("\n[ 총 주문금액 ]");
+            System.out.println(df.format(cart.getTotalPrice()) + "원");
+
+            System.out.println("\n1. 주문확정     2. 메인으로 돌아가기");
+            int decision = sc.nextInt();
+            if (decision == 2) { // 2면 메인으로 돌아가기
+                continue;
+            }
+            if (decision != 1) { // 1이 아니면
+                System.out.println("1 또는 2만 입력해주세요! ");
                 continue;
             }
 
-            while (true) {
-                Category cat = categories.get(choice - 1); // list.get(사용자입력 - 1)
-                System.out.println("\n[ " + cat.getCategoryName() + " 카테고리 ]");
+            System.out.println("\n주문이 완료되었습니다! " + "총 금액: " + df.format(cart.getTotalPrice()) + "원");
 
-                for (int i = 0; i < cat.getProducts().size(); i++) {
-                    cat.getProducts().get(i).printInfo(i + 1);
-                }
+            for (CartItem item : cart.getItems()) {
+                Product p = item.getProduct();
+                int q = item.getQuantity();
 
-                System.out.println("0. 뒤로가기");
-                int choice1 = sc.nextInt();
-                if (choice1 == 0) {
-                    break;
-                }
-                if (choice1 < 1 || choice1 > cat.getProducts().size()) {
-                    System.out.println("존재하지않는 상품입니다.");
-                    continue;
-                }
+                int before = p.getStock();
+                p.decreaseStock(q);
+                int after = p.getStock();
 
-                Product select = cat.getProducts().get(choice1 - 1);
-                // 이 코드 질문하기
-                System.out.println("선택한 상품: "
-                        + select.getName() + " | "
-                        + select.getPrice() + "원 | "
-                        + select.getExplanation() + " | 재고: "
-                        + select.getStock() + "개");
-                break;
-//                if (choice1 == 0) {
-//                    break;
-//                } else if (choice1 >= 1 && choice1 <= cat.getProducts().size()) {
-//                    // 정상 선택
-//                    Product selected = cat.getProducts().get(choice1 - 1);
-//    ...
-//                } else {
-//                    System.out.println("존재하지 않는 상품입니다.");
-//                }
+                System.out.println(p.getName() + " 재고가 " + before + "개 → " + (after) + "개로 업데이트되었습니다.");
             }
+            cart.clear(); // 주문 끝났으니 장바구니 비우기
+            continue;
         }
+
     }
 }
