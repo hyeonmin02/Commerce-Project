@@ -14,6 +14,7 @@ public class CommerceSystem {
     private final List<Category> categories = new ArrayList<>();
     private final Scanner sc = new Scanner(System.in);
     private final Cart cart = new Cart();
+//    private final Customer customer = new Customer("신현민",CustomerGrade.SILVER);
 
     public CommerceSystem() {
         Category clothes = new Category("의류");
