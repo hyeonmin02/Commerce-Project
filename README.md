@@ -1,4 +1,4 @@
-# **🛒 Java Commerce Platform**
+# **🛒 Java Commerce Project**
 
 객체 지향 설계를 기반으로 구현한 콘솔 기반 커머스 플랫폼입니다.
 상품 관리, 카테고리, 장바구니, 주문, 관리자 모드를 단계적으로 구현하며
