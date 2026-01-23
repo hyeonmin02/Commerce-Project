@@ -50,9 +50,11 @@ public class Product {
     public int getStock() { // 재고 숫자 그대로 꺼내줌
         return stock;
     }
+
     public boolean hasStock(int amount) { // 사용자가 이만큼 장바구니에 담아도 되나 물어봄 재고충분 true / 재고부족 false
         return stock >= amount;
     }
+
     public void decreaseStock(int amount) { // 사용자가 결제해서 가져간 만큼 재고차감
         this.stock -= amount;
     }

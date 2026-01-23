@@ -35,6 +35,14 @@ public class Category {
     public void removeProduct(Product product) {
         products.remove(product);
     }
+    public boolean sameProductName(String name) {
+        for (Product product: products) {
+            if (product.getName().equals(name)) {
+                return true; // 같은 이름 있으면
+            }
+        }
+        return false;  //끝까지 없으면
+    }
 }
 //    public void setProducts(List<Product>products) {
 //        this.products = products; // 값을 받아야 해서 이름이 필요 // set 바꿔줘 요청
